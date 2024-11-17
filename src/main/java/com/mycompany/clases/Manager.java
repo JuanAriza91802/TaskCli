@@ -5,15 +5,7 @@
 package com.mycompany.clases;
 
 import java.util.*;
-import java.io.FileWriter;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
-
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
 /**
  *
@@ -24,9 +16,11 @@ public class Manager {
     private List<Task> tasks;
 
     public Manager() {
-        tasks = new ArrayList<>();
+        tasks = Json.uploadTask();
+
     }
 
+    //metodos
     public int size() {
         return tasks.size();
     }
@@ -39,7 +33,6 @@ public class Manager {
         int index = findTaskIndex(id);
         Task task = tasks.get(index);
         task.setDescription(description);
-        task.setUpdateAt();
     }
 
     public void delete(int id) throws TaskNotFoundException {
@@ -50,7 +43,6 @@ public class Manager {
     public void mark(int id, String status) throws TaskNotFoundException {
         int index = findTaskIndex(id);
         tasks.get(index).setStatus(status);
-        tasks.get(index).setUpdateAt();
     }
 
     public void list() {
@@ -70,37 +62,29 @@ public class Manager {
     }
 
     private int findTaskIndex(int id) throws TaskNotFoundException {
-        int primero, centro, ultimo;
-        primero = 0;
-        ultimo = tasks.size() - 1;
-        Task temp = tasks.get(primero);
+    int primero = 0;
+    int ultimo = tasks.size() - 1;
+
+    while (primero <= ultimo) {
+        int centro = primero + (ultimo - primero) / 2; // Evita desbordamientos
+        Task temp = tasks.get(centro);
+
         if (temp.getId() == id) {
-            return primero;
+            return centro; // Devuelve el índice si encuentra la tarea
+        } else if (temp.getId() < id) {
+            primero = centro + 1; // Busca en la mitad derecha
+        } else {
+            ultimo = centro - 1; // Busca en la mitad izquierda
         }
-
-        temp = tasks.get(ultimo);
-        if (temp.getId() == id) {
-            return ultimo;
-        }
-
-        while (primero <= ultimo) {
-            centro = (primero + ultimo) / 2;
-            temp = tasks.get(centro);
-            if (temp.getId() == id) {
-                return centro;
-            } else if (temp.getId() < id) {
-                ultimo = centro - 1;
-            } else if (temp.getId() > id) {
-                primero = centro + 1;
-            }
-        }
-
-        return -1;
-
-//    int index = tasks.indexOf(new Task(id)); // Use Task with id for comparison
-//    if (index == -1) {
-//      throw new TaskNotFoundException(Colores.ANSI_RED +"Task with id " + id + " not found"+ Colores.ANSI_RED);
-//    }
-//    return index;
     }
+
+    // Lanza la excepción si no encuentra el elemento
+    throw new TaskNotFoundException("Task with ID " + id + " not found.");
+}
+
+    // getter and setter
+    public List<Task> getTasks() {
+        return this.tasks;
+    }
+
 }

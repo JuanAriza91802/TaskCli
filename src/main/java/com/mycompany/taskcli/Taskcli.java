@@ -9,13 +9,16 @@ import java.util.*;
 /**
  *
  * @author JAVIER ARIZA
- */
+ */ 
 public class Taskcli {
 
     public static void main(String[] args) throws TaskNotFoundException {
         Scanner sc = new Scanner(System.in);
         Manager mn = new Manager();
         boolean running = true;
+        System.out.println("comandos , * add texto, * update id texto, * delete id \n"
+                + "* mark-done id, * mark-in-progress id, * list, * list done, * list in-progress, * list todo \n"
+                + "* save, * exit");
 
         while (running) {
             System.out.print("task-cli: ");
@@ -25,45 +28,51 @@ public class Taskcli {
                 String[] parts = input.split(" ");
                 String description;
                 switch (parts[0]) {
-                    case "add":
+                    case "add" -> {
                         if (parts.length < 2) {
                             throw new IllegalArgumentException("El comando 'add' requiere una descripción para la tarea.");
                         }
                         description = String.join(" ", Arrays.copyOfRange(parts, 1, parts.length));
-                        mn.add(new Task(mn.size(), description, "to do"));
+                        mn.add(new Task(mn.size()+1, description, "todo"));
                         System.out.println(Colores.ANSI_GREEN + "!! Se agregó la nueva tarea" + Colores.ANSI_GREEN);
-                        break;
-                    case "delete":
+                    }
+                    case "delete" -> {
                         mn.delete(Integer.parseInt(parts[1]));
                         System.out.println(Colores.ANSI_RED + "!! Se eliminó" + Colores.ANSI_RED);
-                        break;
-                    case "update":
+                    }
+                    case "update" -> {
                         description = String.join(" ", Arrays.copyOfRange(parts, 1, parts.length));
                         mn.update(Integer.parseInt(parts[1]), description);
-                        System.out.println(Colores.ANSI_GREEN + "!! se actualizo la tarea" + Colores.ANSI_GREEN);
-                        break;
-                    case "mark-in-progress":
+                        System.out.println(Colores.ANSI_GREEN + "!! se actualizo la tare    a" + Colores.ANSI_GREEN);
+                    }
+                    case "mark-in-progress" -> {
                         mn.mark(Integer.parseInt(parts[1]), "in-progress");
                         System.out.println("!! se marco como :" + Colores.ANSI_YELLOW + "in-progress" + Colores.ANSI_YELLOW);
-                        break;
-                    case "mark-done":
+                    }
+                    case "mark-done" -> {
                         mn.mark(Integer.parseInt(parts[1]), "done");
                         System.out.println("!! se marco como :" + Colores.ANSI_GREEN + "done" + Colores.ANSI_GREEN);
-                        break;
+                    }
 
-                    case "list":
+                    case "list" -> {
                         if (parts.length > 1) {
                             mn.listByStatus(parts[1]);
                         } else {
                             mn.list();
                         }
-                        break;
-                    case "exit":
+                    }
+                    case "save" ->{
+                        Json.saveTask(mn.getTasks());
+                    }
+                    case "exit" -> {
+                        if (!mn.getTasks().isEmpty()) {
+                            Json.saveTask(mn.getTasks());
+                        }
+                        
                         System.out.println(Colores.ANSI_BLUE +"hasta pronto..."+ Colores.ANSI_BLUE);
                         running = false;
-                        break;
-                    default:
-                        System.out.println(Colores.ANSI_RED + "Comando no reconocido" + Colores.ANSI_RED);
+                    }
+                    default -> System.out.println(Colores.ANSI_RED + "Comando no reconocido" + Colores.ANSI_RED);
                 }
             } catch (TaskNotFoundException e) {
                 System.out.println(Colores.ANSI_RED + "Tarea no encontrada." + Colores.ANSI_RED);

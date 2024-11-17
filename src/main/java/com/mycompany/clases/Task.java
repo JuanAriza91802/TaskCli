@@ -4,18 +4,21 @@
  */
 package com.mycompany.clases;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
  *
  * @author JAVIER ARIZA
  */
-public class Task {
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class Task implements Serializable{
     private int id;
     private String description;
     private String status;
-    private LocalDateTime createAt;
-    private LocalDateTime UpdateAt;
+    private LocalDateTime createAt = null;
+    private LocalDateTime updateAt = null;
     // contructores
     public Task(){}
     public Task(int id, String description, String status){
@@ -43,19 +46,21 @@ public class Task {
     }
     public void setDescription(String description){
         this.description= description;
+        this.updateAt = LocalDateTime.now();
     }
     public String getStatus(){
         return this.status;
     }
     public void setStatus(String status){
         this.status = status;
+        this.updateAt = LocalDateTime.now();
     }
     
     public LocalDateTime getUpdateAt(){
-        return this.UpdateAt;
+        return this.updateAt;
     }
     public void setUpdateAt(){
-        this.UpdateAt = LocalDateTime.now();
+        this.updateAt = LocalDateTime.now();
     }
 
     public LocalDateTime getcreateAt(){
@@ -71,7 +76,7 @@ public class Task {
                         +"- Descripcion: "+ this.description+"\n"
                         +"- Estado: "+ this.status+"\n"
                         +"- Fecha de creacion: "+ this.createAt+"\n"
-                        +"- Fecha de Actualizacion: "+ this.UpdateAt+'}';
+                        +"- Fecha de Actualizacion: "+ this.updateAt+'}';
     }
     
     
